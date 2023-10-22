@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.manage.mapper.SysOperatorMapper">
+
+    <!--分页查询操作员-->
+    <select id="pageSearch" resultType="com.cms.manage.entity.SysOperatorEntity">
+        SELECT
+            t.id,
+            t.username,
+            t.avatar,
+            t.is_enabled,
+            t.create_time,
+            t.dept_id,
+            t.name,
+            t.mobile,
+            t.idno,
+            t.openid,
+            p.label AS deptName
+        FROM sys_operator AS t
+        LEFT JOIN sys_department p on t.dept_id = p.id
+        <where>
+            <if test="request.keyword != null and request.keyword != ''">
+                AND t.username LIKE CONCAT('%',#{request.keyword},'%')
+            </if>
+            <if test="request.deptId != null and request.deptId != ''">
+                AND (t.dept_id = #{request.deptId} OR t.dept_id IN (SELECT m.id FROM sys_department m WHERE find_in_set(#{request.deptId}, parent_id)))
+            </if>
+            <!-- 数据范围过滤 -->
+            ${request.params.dataScope}
+        </where>
+        ORDER BY t.create_time DESC
+    </select>
+
+    <!--查询操作员关联角色信息-->
+    <select id="selectOperatorAndRoleById" resultType="java.lang.Long">
+        SELECT role_id FROM sys_operator_role WHERE user_id = #{id}
+    </select>
+
+    <!--查询操作员关联角色数据权限信息-->
+    <select id="selectRoleDataScopeByUserId" resultType="com.cms.common.core.domain.SysRoleDataScope">
+        SELECT
+            sor.role_id,
+            sr.data_scope
+        FROM sys_operator_role AS sor
+        LEFT JOIN sys_role AS sr ON sor.role_id = sr.id
+        WHERE user_id = #{id}
+    </select>
+
+    <!--添加操作员角色关联信息-->
+    <insert id="saveOperatorRole">
+       INSERT INTO sys_operator_role(id, user_id, role_id) VALUES (#{id},#{userId},#{roleId})
+    </insert>
+
+    <!--删除操作员角色关联信息-->
+    <delete id="deleteOperatorRoleByUserId">
+        DELETE FROM sys_operator_role WHERE user_id = #{userId}
+    </delete>
+
+    <!--批量操作员角色关联-->
+    <delete id="deleteBathOperatorRole" parameterType="java.util.Arrays">
+        DELETE FROM sys_operator_role WHERE user_id IN
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <!--批量删除操作员-->
+    <delete id="deleteBath" parameterType="java.util.Arrays">
+        DELETE FROM sys_operator WHERE id IN
+        <foreach collection="array" item="ids" open="(" separator="," close=")">
+            #{ids}
+        </foreach>
+    </delete>
+
+    <!--删除操作员关联角色-->
+    <delete id="removeOperatorRoleByUserId">
+        DELETE FROM sys_operator_role WHERE user_id = #{id}
+    </delete>
+
+    <!--修改操作员角色关联信息-->
+    <update id="updateOperatorRoleByUserId">
+        UPDATE sys_operator_role SET role_id = #{roleId} WHERE user_id = #{userId}
+    </update>
+
+</mapper>

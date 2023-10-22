@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>earth-cloud</artifactId>
+        <groupId>com.dt</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <modules>
+        <module>dt-common-core</module>
+        <module>dt-common-log</module>
+        <module>dt-common-tool</module>
+        <module>dt-common-jdbc</module>
+        <module>dt-common-datascope</module>
+    </modules>
+
+    <artifactId>dt-cloud-common</artifactId>
+    <packaging>pom</packaging>
+    <description>公共服务系统</description>
+
+</project>

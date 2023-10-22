@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cms.manage.mapper.SysRoleMapper">
+
+    <!--根据角色ID查询角色权限信息-->
+    <select id="getMenuListByRoleId" resultType="com.cms.manage.entity.SysMenuEntity">
+        SELECT DISTINCT p.* FROM sys_menu AS p
+        JOIN sys_role_menu AS rp ON p.id = rp.menu_id
+        JOIN sys_role AS sr ON rp.role_id = sr.id
+        WHERE rp.role_id = #{roleId}
+    </select>
+
+    <select id="listRoleMenuByRoleId" resultType="java.lang.Long">
+        SELECT id FROM sys_role_menu WHERE role_id = #{id}
+    </select>
+
+    <select id="pageSearch" resultType="com.cms.manage.entity.SysRoleEntity">
+        SELECT r.* FROM sys_role r
+        <where>
+            <if test="request.keyword != null and request.keyword != ''">
+                AND r.name LIKE CONCAT('%',#{request.keyword},'%')
+            </if>
+        </where>
+        ORDER BY r.create_time DESC
+    </select>
+
+    <select id="selectOperotarRoleByRoleId" resultType="java.lang.Long">
+        SELECT COUNT(*) FROM sys_operator_role WHERE role_id = #{id}
+    </select>
+
+    <select id="selectRoleMenuList" resultType="com.cms.manage.entity.SysRoleMenuEntity">
+        SELECT * FROM sys_role_menu WHERE role_id = #{roleId}
+    </select>
+
+    <select id="selectRoleDataScopeList" resultType="java.lang.Long">
+         SELECT id FROM sys_role_dept WHERE role_id = #{roleId}
+    </select>
+
+    <select id="selectRoleDeptList" resultType="java.lang.Long">
+        SELECT dept_id FROM sys_role_dept WHERE role_id = #{roleId}
+    </select>
+
+    <delete id="deleteRoleMenuByIds">
+        DELETE FROM sys_role_menu WHERE id IN (#{ids})
+    </delete>
+
+    <delete id="deleteBath" parameterType="java.util.List">
+        DELETE FROM sys_role WHERE id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteBathRoleMenu">
+        DELETE FROM sys_role_menu WHERE id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <delete id="deleteRoleDataScopeByIds">
+        DELETE FROM sys_role_dept WHERE id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <insert id="insertRoleMenu">
+        INSERT INTO sys_role_menu(id,role_id, menu_id) VALUES (#{id},#{roleId},#{menuId})
+    </insert>
+
+    <insert id="insertRoleDept">
+        INSERT INTO sys_role_dept(id,role_id, dept_id) VALUES (#{id},#{roleId},#{deptId})
+    </insert>
+
+</mapper>
